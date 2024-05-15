@@ -6,6 +6,11 @@ module.exports = {
     'jest/globals': true,
   },
   extends: ['eslint:recommended', 'plugin:react/recommended'],
+  settings: {
+    react: {
+      version: 'detect', // Specify the React version. Use 'detect' if you want ESLint to automatically detect the version.
+    },
+  },
   parserOptions: {
     ecmaFeatures: {
       jsx: true,
