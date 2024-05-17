@@ -9,7 +9,7 @@ on:
     types: [opened, synchronize]
 
 jobs:
-  simple_deployment_pipeline:
+  build:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v4
@@ -24,12 +24,17 @@ jobs:
         run: npm run build
       - name: Test
         run: npm run test
+
+  deploy:
+    needs: [build]
+    runs-on: ubuntu-20.04
+    if: ${{ github.event_name == 'push' && !contains(github.event.head_commit.message, '#skip') }}
+    steps:
       - name: Trigger deployment
-        if: ${{ github.event_name == 'push' && !contains(github.event.head_commit.message, '#skip') }}
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
 
   tag_release:
-    needs: [simple_deployment_pipeline]
+    needs: [build]
     runs-on: ubuntu-20.04
     if: ${{ github.event_name == 'push' && !contains(github.event.head_commit.message, '#skip')}}
     steps:
